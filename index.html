@@ -1,160 +1,318 @@
-<div class="upcoming-shifts-plugin">
-  <style>
-    .upcoming-shifts-plugin {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: #ffffff;
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-      padding: 20px;
-      max-width: 350px;
-    }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upcoming Shifts Plugin</title>
+    <style>
+        /* Core Plugin Styles */
+        :root {
+            --primary-teal: #00a896;
+            --primary-yellow: #f4d35e;
+            --date-red: #ff5a5f;
+            --bg-color: #ffffff;
+            --text-dark: #333333;
+            --text-light: #777777;
+            --btn-hover: #008f7f;
+        }
 
-    .plugin-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: #333;
-      margin: 0 0 16px 0;
-    }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: transparent; /* Transparent for plugin context */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
 
-    .shift-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
+        .plugin-card {
+            background-color: var(--bg-color);
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+            width: 100%;
+            max-width: 400px;
+            box-sizing: border-box;
+        }
 
-    .shift-item {
-      display: flex;
-      align-items: flex-start;
-      margin-bottom: 16px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid #f0f0f0;
-    }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
 
-    .shift-item:last-child {
-      margin-bottom: 0;
-      padding-bottom: 0;
-      border-bottom: none;
-    }
+        .header h3 {
+            margin: 0;
+            font-size: 18px;
+            color: var(--text-dark);
+        }
 
-    .shift-color-bar {
-      width: 4px;
-      height: 40px;
-      border-radius: 2px;
-      margin-right: 12px;
-      flex-shrink: 0;
-    }
+        .shift-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
 
-    .bar-teal { background-color: #00a896; }
-    .bar-yellow { background-color: #f4d35e; }
-    .bar-blue { background-color: #4a90e2; }
+        .shift-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
 
-    .shift-details {
-      flex-grow: 1;
-    }
+        /* The colored status bar */
+        .status-bar {
+            width: 6px;
+            height: 50px;
+            border-radius: 4px;
+            margin-right: 15px;
+            background-image: repeating-linear-gradient(
+                -45deg,
+                transparent,
+                transparent 4px,
+                rgba(255, 255, 255, 0.3) 4px,
+                rgba(255, 255, 255, 0.3) 8px
+            );
+        }
 
-    .shift-name {
-      font-size: 16px;
-      font-weight: 500;
-      color: #333;
-      margin: 0 0 4px 0;
-    }
+        .status-teal { background-color: var(--primary-teal); }
+        .status-yellow { background-color: var(--primary-yellow); }
 
-    .shift-time {
-      font-size: 14px;
-      color: #777;
-      margin: 0 0 6px 0;
-    }
+        .shift-info {
+            flex-grow: 1;
+        }
 
-    .shift-icons {
-      display: flex;
-      gap: 8px;
-      font-size: 14px;
-      color: #777;
-    }
+        .shift-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0 0 4px 0;
+        }
 
-    .date-badge {
-      background-color: #ff5a5f;
-      color: white;
-      border-radius: 8px;
-      padding: 6px 10px;
-      text-align: center;
-      flex-shrink: 0;
-      margin-left: 12px;
-    }
+        .shift-time {
+            font-size: 14px;
+            color: var(--text-light);
+            margin: 0;
+        }
 
-    .date-month {
-      font-size: 10px;
-      text-transform: uppercase;
-      display: block;
-      line-height: 1;
-      margin-bottom: 2px;
-    }
+        /* Icons row */
+        .shift-icons {
+            margin-top: 4px;
+            font-size: 14px;
+            color: var(--text-light);
+            display: flex;
+            gap: 8px;
+        }
 
-    .date-day {
-      font-size: 16px;
-      font-weight: 600;
-      line-height: 1;
-      display: block;
-    }
+        /* Date Badge (Red Top) */
+        .date-badge {
+            flex-shrink: 0;
+            width: 45px;
+            border-radius: 10px;
+            overflow: hidden;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            margin-left: 10px;
+        }
 
-    .view-all-link {
-      display: block;
-      text-align: center;
-      margin-top: 20px;
-      font-size: 14px;
-      color: #00a896;
-      text-decoration: none;
-      font-weight: 500;
-    }
-    
-    .view-all-link:hover {
-        text-decoration: underline;
-    }
-  </style>
+        .date-month {
+            background-color: var(--date-red);
+            color: white;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 4px 0;
+            text-transform: uppercase;
+        }
 
-  <h3 class="plugin-title">Upcoming shifts</h3>
+        .date-day {
+            background-color: #fff;
+            color: var(--text-dark);
+            font-size: 16px;
+            font-weight: 700;
+            padding: 6px 0;
+            border: 1px solid #eee;
+            border-top: none;
+        }
 
-  <ul class="shift-list">
-    <li class="shift-item">
-      <div class="shift-color-bar bar-teal"></div>
-      <div class="shift-details">
-        <h4 class="shift-name">Night warriors</h4>
-        <p class="shift-time">20:00 - 06:00</p>
-      </div>
-      <div class="date-badge">
-        <span class="date-month">FEB</span>
-        <span class="date-day">17</span>
-      </div>
-    </li>
+        /* Swap Button Area */
+        .action-row {
+            margin-top: 10px;
+            display: flex;
+            justify-content: flex-end;
+        }
 
-    <li class="shift-item">
-      <div class="shift-color-bar bar-yellow"></div>
-      <div class="shift-details">
-        <h4 class="shift-name">Early birds</h4>
-        <p class="shift-time">09:00 - 13:00</p>
-        <div class="shift-icons">
-          <span>☕</span>
-          <span>📦</span>
-        </div>
-      </div>
-      <div class="date-badge">
-        <span class="date-month">FEB</span>
-        <span class="date-day">18</span>
-      </div>
-    </li>
+        .btn-swap {
+            background-color: var(--primary-teal);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
 
-    <li class="shift-item">
-      <div class="shift-color-bar bar-blue"></div>
-      <div class="shift-details">
-        <h4 class="shift-name">Mid-day hustle</h4>
-        <p class="shift-time">13:00 - 18:00</p>
-      </div>
-      <div class="date-badge">
-        <span class="date-month">FEB</span>
-        <span class="date-day">19</span>
-      </div>
-    </li>
-  </ul>
+        .btn-swap:hover {
+            background-color: var(--btn-hover);
+        }
 
-  <a href="#" class="view-all-link">View all shifts</a>
+        .btn-swap:active {
+            transform: scale(0.98);
+        }
+
+        .btn-swap svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+        }
+
+        /* Loading/Status Message */
+        #status-msg {
+            margin-top: 10px;
+            font-size: 12px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+    </style>
+</head>
+<body>
+
+<div class="plugin-card">
+    <div class="header">
+        <h3>Upcoming Shifts</h3>
+    </div>
+
+    <ul class="shift-list">
+        <li>
+            <div class="shift-item">
+                <div class="status-bar status-teal"></div>
+                <div class="shift-info">
+                    <h4 class="shift-name">Night</h4>
+                    <p class="shift-time">20:00 - 06:00</p>
+                </div>
+                <div class="date-badge">
+                    <div class="date-month">Feb</div>
+                    <div class="date-day">17</div>
+                </div>
+            </div>
+        </li>
+
+        <li>
+            <div class="shift-item">
+                <div class="status-bar status-yellow"></div>
+                <div class="shift-info">
+                    <h4 class="shift-name">Early birds</h4>
+                    <p class="shift-time">09:00 - 13:00</p>
+                    <div class="shift-icons">
+                        <span>☕</span>
+                        <span>📦</span>
+                    </div>
+                </div>
+                <div class="date-badge">
+                    <div class="date-month">Feb</div>
+                    <div class="date-day">16</div>
+                </div>
+            </div>
+            <div class="action-row">
+                <button class="btn-swap" onclick="triggerSwap()">
+                    <svg viewBox="0 0 24 24"><path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/></svg>
+                    Swap Shift
+                </button>
+            </div>
+        </li>
+    </ul>
+
+    <div id="status-msg"></div>
 </div>
+
+<script>
+    async function triggerSwap() {
+        const statusEl = document.getElementById('status-msg');
+        statusEl.style.opacity = '1';
+        statusEl.style.color = '#777';
+        statusEl.innerText = 'Initiating swap...';
+
+        // API Configuration
+        const url = 'https://app.staffbase.com/api/branch/notifications';
+        
+        // Payload defined in prompt
+        const payload = {
+            "accessorIds": [
+                "680c0cd13efa2971fe53c4c7"
+            ],
+            "channels": [
+                "notificationCenter",
+                "push"
+            ],
+            "content": {
+                "en_US": {
+                    "text": "Shift Swap Initiated"
+                },
+                "de_DE": {
+                    "text": "New Learning Module available"
+                }
+            },
+            "icon": {
+                "en_US": {
+                    "type": "font",
+                    "char": "n"
+                },
+                "de_DE": {
+                    "type": "font",
+                    "char": "n"
+                }
+            },
+            "image": {
+                "en_US": {
+                    "type": "image",
+                    "href": "https://unifysolutions.net/supportedproduct/sap-success-factors/SAP-SuccessFactors.png",
+                    "width": 600,
+                    "height": 400
+                },
+                "de_DE": {
+                    "type": "image",
+                    "href": "https://unifysolutions.net/supportedproduct/sap-success-factors/SAP-SuccessFactors.png",
+                    "width": 600,
+                    "height": 400
+                }
+            },
+            "link": "https://performancemanager4.successfactors.com/login#/companyEntry"
+        };
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Note: In a production environment, ensure this Basic Auth header is kept secure.
+                    // If running from a local file, you may encounter CORS errors unless the server allows it.
+                    'Authorization': 'Basic NjgwZmFjZDlhZmY4ZTkyZDQ3OGVkMzdjOk9bbztXbF9IMnQpQjM1SUpoe1ViVyshdVRaKWlFLU9xTF5KSSsta10hOUIobFRGLTJDc3F6ZW4yQzBFdFNZSzI='
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                statusEl.style.color = 'green';
+                statusEl.innerText = 'Swap Request Sent Successfully!';
+            } else {
+                statusEl.style.color = 'red';
+                statusEl.innerText = 'Error: ' + response.status + ' ' + response.statusText;
+                console.error('API Error:', await response.text());
+            }
+
+        } catch (error) {
+            statusEl.style.color = 'red';
+            statusEl.innerText = 'Network/CORS Error. Check console.';
+            console.error('Fetch error:', error);
+        }
+    }
+</script>
+
+</body>
+</html>
