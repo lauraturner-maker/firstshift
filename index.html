@@ -1,0 +1,160 @@
+<div class="upcoming-shifts-plugin">
+  <style>
+    .upcoming-shifts-plugin {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      padding: 20px;
+      max-width: 350px;
+    }
+
+    .plugin-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      margin: 0 0 16px 0;
+    }
+
+    .shift-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .shift-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .shift-item:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .shift-color-bar {
+      width: 4px;
+      height: 40px;
+      border-radius: 2px;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+
+    .bar-teal { background-color: #00a896; }
+    .bar-yellow { background-color: #f4d35e; }
+    .bar-blue { background-color: #4a90e2; }
+
+    .shift-details {
+      flex-grow: 1;
+    }
+
+    .shift-name {
+      font-size: 16px;
+      font-weight: 500;
+      color: #333;
+      margin: 0 0 4px 0;
+    }
+
+    .shift-time {
+      font-size: 14px;
+      color: #777;
+      margin: 0 0 6px 0;
+    }
+
+    .shift-icons {
+      display: flex;
+      gap: 8px;
+      font-size: 14px;
+      color: #777;
+    }
+
+    .date-badge {
+      background-color: #ff5a5f;
+      color: white;
+      border-radius: 8px;
+      padding: 6px 10px;
+      text-align: center;
+      flex-shrink: 0;
+      margin-left: 12px;
+    }
+
+    .date-month {
+      font-size: 10px;
+      text-transform: uppercase;
+      display: block;
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+
+    .date-day {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1;
+      display: block;
+    }
+
+    .view-all-link {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: #00a896;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .view-all-link:hover {
+        text-decoration: underline;
+    }
+  </style>
+
+  <h3 class="plugin-title">Upcoming shifts</h3>
+
+  <ul class="shift-list">
+    <li class="shift-item">
+      <div class="shift-color-bar bar-teal"></div>
+      <div class="shift-details">
+        <h4 class="shift-name">Night warriors</h4>
+        <p class="shift-time">20:00 - 06:00</p>
+      </div>
+      <div class="date-badge">
+        <span class="date-month">FEB</span>
+        <span class="date-day">17</span>
+      </div>
+    </li>
+
+    <li class="shift-item">
+      <div class="shift-color-bar bar-yellow"></div>
+      <div class="shift-details">
+        <h4 class="shift-name">Early birds</h4>
+        <p class="shift-time">09:00 - 13:00</p>
+        <div class="shift-icons">
+          <span>☕</span>
+          <span>📦</span>
+        </div>
+      </div>
+      <div class="date-badge">
+        <span class="date-month">FEB</span>
+        <span class="date-day">18</span>
+      </div>
+    </li>
+
+    <li class="shift-item">
+      <div class="shift-color-bar bar-blue"></div>
+      <div class="shift-details">
+        <h4 class="shift-name">Mid-day hustle</h4>
+        <p class="shift-time">13:00 - 18:00</p>
+      </div>
+      <div class="date-badge">
+        <span class="date-month">FEB</span>
+        <span class="date-day">19</span>
+      </div>
+    </li>
+  </ul>
+
+  <a href="#" class="view-all-link">View all shifts</a>
+</div>
