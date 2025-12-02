@@ -61,12 +61,13 @@
             position: relative;
         }
 
-        /* The colored status bar */
+        /* The colored status bar styled like Image 1 */
         .status-bar {
             width: 6px;
             height: 50px;
             border-radius: 4px;
             margin-right: 15px;
+            /* Optional: Subtle texture like Image 1 */
             background-image: repeating-linear-gradient(
                 -45deg,
                 transparent,
@@ -96,7 +97,7 @@
             margin: 0;
         }
 
-        /* Icons row */
+        /* Icons row like Image 1 */
         .shift-icons {
             margin-top: 4px;
             font-size: 14px;
@@ -105,7 +106,7 @@
             gap: 8px;
         }
 
-        /* Date Badge (Red Top) */
+        /* Date Badge styled like Image 1 */
         .date-badge {
             flex-shrink: 0;
             width: 45px;
@@ -140,6 +141,9 @@
             margin-top: 10px;
             display: flex;
             justify-content: flex-end;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 15px;
         }
 
         .btn-swap {
@@ -193,7 +197,7 @@
             <div class="shift-item">
                 <div class="status-bar status-teal"></div>
                 <div class="shift-info">
-                    <h4 class="shift-name">Night</h4>
+                    <h4 class="shift-name">Night warriors</h4>
                     <p class="shift-time">20:00 - 06:00</p>
                 </div>
                 <div class="date-badge">
@@ -204,7 +208,7 @@
         </li>
 
         <li>
-            <div class="shift-item">
+            <div class="shift-item" style="margin-bottom: 0;">
                 <div class="status-bar status-yellow"></div>
                 <div class="shift-info">
                     <h4 class="shift-name">Early birds</h4>
@@ -226,6 +230,19 @@
                 </button>
             </div>
         </li>
+         <li>
+            <div class="shift-item">
+                <div class="status-bar status-teal"></div>
+                <div class="shift-info">
+                    <h4 class="shift-name">Mid-day hustle</h4>
+                    <p class="shift-time">13:00 - 18:00</p>
+                </div>
+                <div class="date-badge">
+                    <div class="date-month">Feb</div>
+                    <div class="date-day">19</div>
+                </div>
+            </div>
+        </li>
     </ul>
 
     <div id="status-msg"></div>
@@ -236,9 +253,9 @@
         const statusEl = document.getElementById('status-msg');
         statusEl.style.opacity = '1';
         statusEl.style.color = '#777';
-        statusEl.innerText = 'Initiating swap...';
+        statusEl.innerText = 'Initiating swap request...';
 
-        // API Configuration
+        // API Configuration used exactly as provided in the prompt
         const url = 'https://app.staffbase.com/api/branch/notifications';
         
         // Payload defined in prompt
@@ -290,8 +307,9 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    // Note: In a production environment, ensure this Basic Auth header is kept secure.
-                    // If running from a local file, you may encounter CORS errors unless the server allows it.
+                    // IMPORTANT: This Authorization header contains sensitive information. 
+                    // In a real production environment, this call should be proxied through a backend service 
+                    // rather than exposed directly in client-side code.
                     'Authorization': 'Basic NjgwZmFjZDlhZmY4ZTkyZDQ3OGVkMzdjOk9bbztXbF9IMnQpQjM1SUpoe1ViVyshdVRaKWlFLU9xTF5KSSsta10hOUIobFRGLTJDc3F6ZW4yQzBFdFNZSzI='
                 },
                 body: JSON.stringify(payload)
@@ -299,16 +317,21 @@
 
             if (response.ok) {
                 statusEl.style.color = 'green';
+                // The response body might be empty or contain JSON, depending on the API.
+                // Assuming success if status is 2xx.
                 statusEl.innerText = 'Swap Request Sent Successfully!';
+                // Optional: log response data if needed
+                // const data = await response.json(); console.log(data);
             } else {
                 statusEl.style.color = 'red';
                 statusEl.innerText = 'Error: ' + response.status + ' ' + response.statusText;
-                console.error('API Error:', await response.text());
+                console.error('API Error Response:', await response.text());
             }
 
         } catch (error) {
             statusEl.style.color = 'red';
-            statusEl.innerText = 'Network/CORS Error. Check console.';
+            statusEl.innerText = 'Network Error. Check console details.';
+            // This often happens due to CORS if the server doesn't allow calls from the current origin.
             console.error('Fetch error:', error);
         }
     }
