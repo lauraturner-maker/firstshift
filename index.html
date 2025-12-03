@@ -17,12 +17,13 @@
             --text-light: #9ca3af;
             --border-color: #f3f4f6;
             --btn-hover: #008f7f;
+            --btn-disabled: #9ca3af;
             --overlay-bg: rgba(0, 0, 0, 0.4);
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f0f2f5; /* Light grey background for the preview context */
+            background-color: #f0f2f5; 
             margin: 0;
             padding: 20px;
             display: flex;
@@ -39,7 +40,7 @@
             width: 100%;
             max-width: 380px;
             overflow: hidden;
-            position: relative; /* Context for modal absolute positioning */
+            position: relative;
             height: fit-content;
         }
 
@@ -150,12 +151,12 @@
             border-bottom: 1px solid var(--border-color);
             cursor: pointer;
             transition: background-color 0.2s, transform 0.1s;
-            border-radius: 8px; /* Slight radius on hover */
+            border-radius: 8px; 
         }
 
         .shift-item:hover {
             background-color: #f9fafb;
-            padding-left: 8px; /* Subtle movement */
+            padding-left: 8px; 
             padding-right: 8px;
             margin-left: -8px;
             margin-right: -8px;
@@ -256,7 +257,7 @@
             background-color: var(--overlay-bg);
             backdrop-filter: blur(2px);
             display: flex;
-            align-items: flex-end; /* Slide up from bottom style */
+            align-items: flex-end; 
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.3s ease;
@@ -272,7 +273,7 @@
         .modal-card {
             background-color: white;
             width: 100%;
-            border-radius: 24px 24px 0 0; /* Rounded top corners */
+            border-radius: 24px 24px 0 0; 
             padding: 24px;
             box-sizing: border-box;
             box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
@@ -367,8 +368,9 @@
         }
         
         .btn-swap:disabled {
-            background-color: #ccc;
+            background-color: var(--btn-disabled);
             cursor: not-allowed;
+            opacity: 0.7;
         }
 
         .loading-spinner {
@@ -392,7 +394,8 @@
             font-size: 13px;
             text-align: center;
             margin-top: -8px;
-            min-height: 18px;
+            min-height: 20px; /* Prevent layout jump */
+            font-weight: 500;
         }
         .status-success { color: #10b981; }
         .status-error { color: #ef4444; }
@@ -561,7 +564,19 @@
     </div>
 
     <script>
-        // Modal Logic
+        // --- PRODUCTION CONFIGURATION ---
+        const CONFIG = {
+            // CRITICAL: In production, this URL must point to your backend/proxy (e.g., '/api/notifications').
+            // Browsers block direct calls to 'https://app.staffbase.com' due to CORS.
+            // DO NOT put Basic Auth keys here. Your backend must inject the Authorization header.
+            apiUrl: 'https://app.staffbase.com/api/branch/notifications', 
+            
+            // This flag enables a fallback for this demo/preview so you can see the success state
+            // even if the API call is blocked by CORS. Set to false in actual production.
+            enableDemoFallback: true 
+        };
+
+        // --- UI Logic ---
         const modal = document.getElementById('shiftModal');
         const swapBtn = document.getElementById('swapBtn');
         const statusMsg = document.getElementById('statusMessage');
@@ -572,7 +587,7 @@
             document.getElementById('modalLocation').innerText = location;
             document.getElementById('modalDate').innerText = date;
             
-            // Reset state
+            // Reset UI state
             statusMsg.innerText = '';
             statusMsg.className = 'status-message';
             swapBtn.disabled = false;
@@ -595,84 +610,94 @@
             }
         });
 
-        // API Logic
-        async function triggerSwap() {
-            // UI Loading State
-            swapBtn.disabled = true;
-            swapBtn.innerHTML = `<span class="loading-spinner"></span> Sending Request...`;
-            statusMsg.innerText = '';
-
-            const url = 'https://app.staffbase.com/api/branch/notifications';
-            
-            const payload = {
-                "accessorIds": [ "68362d155187c875bbb106d8" ],
-                "channels": [ "notificationCenter", "push" ],
-                "content": {
-                    "en_US": { "text": "Shift Swap Initiated" },
-                    "de_DE": { "text": "New Learning Module available" }
-                },
-                "icon": {
-                    "en_US": { "type": "font", "char": "n" },
-                    "de_DE": { "type": "font", "char": "n" }
-                },
-                "image": {
-                    "en_US": {
-                        "type": "image",
-                        "href": "https://cdn-icons-png.flaticon.com/512/8677/8677730.png",
-                        "width": 600,
-                        "height": 400
+        // --- Notification Service ---
+        const NotificationService = {
+            async sendSwapRequest() {
+                const payload = {
+                    "accessorIds": [ "68362d155187c875bbb106d8" ],
+                    "channels": [ "notificationCenter", "push" ],
+                    "content": {
+                        "en_US": { "text": "Shift Swap Initiated" },
+                        "de_DE": { "text": "New Learning Module available" }
                     },
-                    "de_DE": {
-                        "type": "image",
-                        "href": "https://cdn-icons-png.flaticon.com/512/8677/8677730.png",
-                        "width": 600,
-                        "height": 400
-                    }
-                },
-                "link": "https://performancemanager4.successfactors.com/login#/companyEntry"
-            };
+                    "icon": {
+                        "en_US": { "type": "font", "char": "n" },
+                        "de_DE": { "type": "font", "char": "n" }
+                    },
+                    "image": {
+                        "en_US": {
+                            "type": "image",
+                            "href": "https://cdn-icons-png.flaticon.com/512/8677/8677730.png",
+                            "width": 600,
+                            "height": 400
+                        },
+                        "de_DE": {
+                            "type": "image",
+                            "href": "https://cdn-icons-png.flaticon.com/512/8677/8677730.png",
+                            "width": 600,
+                            "height": 400
+                        }
+                    },
+                    "link": "https://performancemanager4.successfactors.com/login#/companyEntry"
+                };
 
-            // Helper to simulate success for Demo purposes if API fails with 403/CORS
-            const handleSuccess = () => {
-                swapBtn.innerHTML = `<span>✔ Request Sent</span>`;
-                statusMsg.className = 'status-message status-success';
-                statusMsg.innerText = 'Manager notified successfully.';
-                setTimeout(() => { closeModal(); }, 2000);
-            };
-
-            try {
-                const response = await fetch(url, {
+                // NOTE: We do not include 'Authorization' header here.
+                // In production, the backend/proxy must attach the credentials.
+                const response = await fetch(CONFIG.apiUrl, {
                     method: 'POST',
-                    mode: 'cors', // Explicitly state CORS
-                    credentials: 'omit', // IMPORTANT: Do not send cookies to avoid conflicts in Staffbase widget
-                    headers: {
-                        'Content-Type': 'application/json',
-                        // WARNING: Including Basic Auth keys in client-side code is insecure for production.
-                        'Authorization': 'Basic NjgzNjc4ZDVjYTRjODk3MThhZjQxMDRiOl1TT3swcl8yKkRsMlNbcVpRaXY4RSwwKzdZbSE3KChXcVMsXkpZYlN5cTFuTW9FKUY2UyQkLEoqUy5ZRkRCK30='
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
 
-                if (response.ok) {
-                    console.log("API Call Successful");
-                    handleSuccess();
-                } else if (response.status === 403 || response.status === 401) {
-                    // DEMO FALLBACK:
-                    // If we get a 403/401, it's likely due to browser CORS restrictions on Basic Auth.
-                    // For the purpose of the Demo, we simulate success.
-                    console.warn("API Error 403/401 caught. Using Demo Fallback to show success state.");
-                    console.warn("Note: In production, Basic Auth requests must be proxied via a backend service.");
-                    handleSuccess();
-                } else {
-                    throw new Error(response.statusText);
+                if (!response.ok) {
+                    throw new Error(`Server returned ${response.status}: ${response.statusText}`);
                 }
+                return response;
+            }
+        };
+
+        // --- Main Action ---
+        async function triggerSwap() {
+            // 1. Set Loading State
+            swapBtn.disabled = true;
+            swapBtn.innerHTML = `<span class="loading-spinner"></span> Sending Request...`;
+            statusMsg.innerText = '';
+            statusMsg.className = 'status-message';
+
+            try {
+                // 2. Attempt API Call
+                await NotificationService.sendSwapRequest();
+                
+                // 3. Success State
+                handleSuccess();
 
             } catch (error) {
-                // If it's a network error (often CORS), we can also fallback for the demo
-                console.warn("Network Error caught (likely CORS). Using Demo Fallback.");
-                console.error(error);
-                handleSuccess(); // Proceed with success animation for demo continuity
+                console.error("Swap Request Failed:", error);
+
+                // 4. Fallback Handling (For Demo or CORS errors)
+                // In production, you might remove this block if you have a working proxy.
+                if (CONFIG.enableDemoFallback && (error.message.includes('Failed to fetch') || error.message.includes('403') || error.message.includes('401'))) {
+                     console.warn("Using Demo Fallback due to API error (likely CORS or missing proxy).");
+                     handleSuccess();
+                     return;
+                }
+
+                // 5. Error State
+                swapBtn.disabled = false;
+                swapBtn.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                    <span>Retry Request</span>
+                `;
+                statusMsg.innerText = 'Request failed. Please try again.';
+                statusMsg.className = 'status-message status-error';
             }
+        }
+
+        function handleSuccess() {
+            swapBtn.innerHTML = `<span>✔ Request Sent</span>`;
+            statusMsg.className = 'status-message status-success';
+            statusMsg.innerText = 'Manager notified successfully.';
+            setTimeout(() => { closeModal(); }, 2000);
         }
     </script>
 </body>
